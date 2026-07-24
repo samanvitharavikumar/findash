@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "./components/Navbar";
 import Summary from "./components/Summary";
 import TransactionCard from "./components/TransactionCard";
@@ -8,7 +8,19 @@ function App() {
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
   const [transactions, setTransactions] = useState([]);
+useEffect(() => {
+  console.log("Fetching data...");
 
+  fetch("http://127.0.0.1:8000/api/transactions/")
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+      setTransactions(data);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}, []);
   function addTransaction() {
     if (title.trim() === "" || amount.trim() === "") {
       alert("Please fill in both fields.");
