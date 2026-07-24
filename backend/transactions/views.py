@@ -24,3 +24,44 @@ def transaction_list(request):
     )
 
     return Response(serializer.data)
+
+@api_view(["DELETE"])
+def delete_transaction(request, id):
+
+    try:
+        transaction = Transaction.objects.get(id=id)
+
+    except Transaction.DoesNotExist:
+        return Response(
+            {"error": "Transaction not found"},
+            status=404
+        )
+
+    transaction.delete()
+
+    return Response(
+        {"message": "Transaction deleted successfully"},
+        status=200
+    )
+@api_view(["PUT"])
+def update_transaction(request, id):
+
+    try:
+        transaction = Transaction.objects.get(id=id)
+
+    except Transaction.DoesNotExist:
+        return Response(
+            {"error": "Transaction not found"},
+            status=404
+        )
+
+    serializer = TransactionSerializer(
+        transaction,
+        data=request.data
+    )
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+
+    return Response(serializer.errors, status=400)

@@ -1,26 +1,28 @@
-function TransactionCard({ transaction, index, deleteTransaction }) {
-  const isIncome = Number(transaction.amount) >= 0;
-
+function TransactionCard({
+  transaction,
+  deleteTransaction,
+  editTransaction,
+}) {
   return (
     <div className="transaction-card">
-      <div className="transaction-info">
-        <h4>{transaction.title}</h4>
-
-        <p
-          style={{
-            color: isIncome ? "green" : "red",
-          }}
-        >
-          {isIncome ? "+" : "-"}₹ {Math.abs(Number(transaction.amount)).toFixed(2)}
-        </p>
+      <div>
+        <h3>{transaction.title}</h3>
+        <p>₹ {transaction.amount}</p>
       </div>
 
-      <button
-        className="delete-btn"
-        onClick={() => deleteTransaction(index)}
-      >
-        🗑️
-      </button>
+      <div>
+        <button
+          onClick={() => editTransaction(transaction)}
+        >
+          ✏ Edit
+        </button>
+
+        <button
+          onClick={() => deleteTransaction(transaction.id)}
+        >
+          🗑 Delete
+        </button>
+      </div>
     </div>
   );
 }

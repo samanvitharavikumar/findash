@@ -8,49 +8,82 @@ function App() {
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
   const [transactions, setTransactions] = useState([]);
-useEffect(() => {
-  console.log("Fetching data...");
+  const [editingId, setEditingId] = useState(null);
 
-  fetch("http://127.0.0.1:8000/api/transactions/")
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data);
-      setTransactions(data);
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/transactions/")
+      .then((response) => response.json())
+      .then((data) => setTransactions(data))
+      .catch((error) => console.error(error));
+  }, []);
+
+  function addTransaction() {
+    if (title.trim() === "" || amount.trim() === "") {
+      alert("Please fill in both fields.");
+      return;
+    }
+
+    fetch("http://127.0.0.1:8000/api/transactions/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title,
+        amount,
+      }),
     })
-    .catch((error) => {
-      console.error(error);
-    });
-}, []);
-function addTransaction() {
-  if (title.trim() === "" || amount.trim() === "") {
-    alert("Please fill in both fields.");
-    return;
+      .then((response) => response.json())
+      .then((data) => {
+        setTransactions((prev) => [...prev, data]);
+        setTitle("");
+        setAmount("");
+      })
+      .catch((error) => console.error(error));
   }
 
-  fetch("http://127.0.0.1:8000/api/transactions/", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      title,
-      amount,
-    }),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      setTransactions([...transactions, data]);
+  function deleteTransaction(id) {
+    fetch(`http://127.0.0.1:8000/api/transactions/${id}/`, {
+      method: "DELETE",
+    })
+      .then(() => {
+        setTransactions((prev) =>
+          prev.filter((transaction) => transaction.id !== id)
+        );
+      })
+      .catch((error) => console.error(error));
+  }
 
-      setTitle("");
-      setAmount("");
-    });
-}
-  function deleteTransaction(indexToDelete) {
-    const updatedTransactions = transactions.filter(
-      (_, index) => index !== indexToDelete
-    );
+  function editTransaction(transaction) {
+    setTitle(transaction.title);
+    setAmount(transaction.amount);
+    setEditingId(transaction.id);
+  }
 
-    setTransactions(updatedTransactions);
+  function updateTransaction(id, title, amount) {
+    fetch(`http://127.0.0.1:8000/api/transactions/${id}/update/`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title,
+        amount,
+      }),
+    })
+      .then((response) => response.json())
+      .then((updatedTransaction) => {
+        setTransactions((prev) =>
+          prev.map((transaction) =>
+            transaction.id === id ? updatedTransaction : transaction
+          )
+        );
+
+        setEditingId(null);
+        setTitle("");
+        setAmount("");
+      })
+      .catch((error) => console.error(error));
   }
 
   const total = transactions.reduce(
@@ -77,7 +110,7 @@ function addTransaction() {
       />
 
       <div className="form-container">
-        <h2>Add Transaction</h2>
+        <h2>{editingId ? "Edit Transaction" : "Add Transaction"}</h2>
 
         <input
           type="text"
@@ -93,8 +126,14 @@ function addTransaction() {
           onChange={(e) => setAmount(e.target.value)}
         />
 
-        <button onClick={addTransaction}>
-          ➕ Add Transaction
+        <button
+          onClick={() =>
+            editingId
+              ? updateTransaction(editingId, title, amount)
+              : addTransaction()
+          }
+        >
+          {editingId ? "💾 Save Changes" : "➕ Add Transaction"}
         </button>
       </div>
 
@@ -104,12 +143,12 @@ function addTransaction() {
         {transactions.length === 0 ? (
           <p>No transactions yet.</p>
         ) : (
-          transactions.map((transaction, index) => (
+          transactions.map((transaction) => (
             <TransactionCard
-              key={index}
+              key={transaction.id}
               transaction={transaction}
-              index={index}
               deleteTransaction={deleteTransaction}
+              editTransaction={editTransaction}
             />
           ))
         )}
