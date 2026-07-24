@@ -21,23 +21,30 @@ useEffect(() => {
       console.error(error);
     });
 }, []);
-  function addTransaction() {
-    if (title.trim() === "" || amount.trim() === "") {
-      alert("Please fill in both fields.");
-      return;
-    }
-
-    const newTransaction = {
-      title,
-      amount,
-    };
-
-    setTransactions([...transactions, newTransaction]);
-
-    setTitle("");
-    setAmount("");
+function addTransaction() {
+  if (title.trim() === "" || amount.trim() === "") {
+    alert("Please fill in both fields.");
+    return;
   }
 
+  fetch("http://127.0.0.1:8000/api/transactions/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      title,
+      amount,
+    }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      setTransactions([...transactions, data]);
+
+      setTitle("");
+      setAmount("");
+    });
+}
   function deleteTransaction(indexToDelete) {
     const updatedTransactions = transactions.filter(
       (_, index) => index !== indexToDelete
