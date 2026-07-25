@@ -1,11 +1,13 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-
 from .models import Transaction
-from .serializers import TransactionSerializer
-
+from .serializers import TransactionSerializer, RegisterSerializer
+from django.contrib.auth.models import User
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 
 @api_view(["GET", "POST"])
+@permission_classes([IsAuthenticated])
 def transaction_list(request):
 
     if request.method == "POST":
@@ -13,10 +15,12 @@ def transaction_list(request):
         serializer = TransactionSerializer(data=request.data)
 
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(user=request.user)
             return Response(serializer.data)
+
         return Response(serializer.errors, status=400)
-    transactions = Transaction.objects.all()
+
+    transactions = Transaction.objects.filter(user=request.user)
 
     serializer = TransactionSerializer(
         transactions,
@@ -63,5 +67,18 @@ def update_transaction(request, id):
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
+
+    return Response(serializer.errors, status=400)
+@api_view(["POST"])
+def register_user(request):
+
+    serializer = RegisterSerializer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(
+            {"message": "User registered successfully"},
+            status=201
+        )
 
     return Response(serializer.errors, status=400)
