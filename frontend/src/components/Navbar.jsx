@@ -1,34 +1,42 @@
-function Navbar() {
-  return (
-    <nav
-      style={{
-        background: "linear-gradient(135deg, #2563eb, #4f46e5)",
-        color: "white",
-        padding: "25px",
-        borderRadius: "18px",
-        textAlign: "center",
-        boxShadow: "0 12px 25px rgba(0,0,0,0.15)",
-      }}
-    >
-      <h1
-        style={{
-          margin: 0,
-          fontSize: "32px",
-        }}
-      >
-        💰 Finance Dashboard
-      </h1>
+import { Link } from "react-router-dom";
 
-      <p
-        style={{
-          marginTop: "10px",
-          opacity: 0.9,
-        }}
-      >
-        Track your income and expenses effortlessly
-      </p>
-    </nav>
-  );
+function Navbar() {
+    return (
+        <nav className="flex justify-between items-center bg-indigo-900 text-white px-8 py-4 shadow-lg">
+
+            <h2 className="text-2xl font-serif">
+                 FinDash
+            </h2>
+
+            <div className="flex gap-8 font-serif">
+
+                
+
+                <Link
+                    to="/add-expense"
+                    className="hover:text-black transition"
+                >
+                    Add Expense
+                </Link>
+
+                <Link
+                    to="/charts"
+                    className="hover:text-black transition"
+                >
+                    Charts
+                </Link>
+
+                <Link
+                    to="/ai-helper"
+                    className="hover:text-black transition"
+                >
+                    AI Helper
+                </Link>
+
+            </div>
+
+        </nav>
+    );
 }
 
 export default Navbar;
