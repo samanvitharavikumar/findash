@@ -30,23 +30,21 @@ def transaction_list(request):
     return Response(serializer.data)
 
 @api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
 def delete_transaction(request, id):
 
     try:
-        transaction = Transaction.objects.get(id=id)
+        transaction = Transaction.objects.get(
+            id=id,
+            user=request.user
+        )
 
     except Transaction.DoesNotExist:
-        return Response(
-            {"error": "Transaction not found"},
-            status=404
-        )
+        return Response(status=404)
 
     transaction.delete()
 
-    return Response(
-        {"message": "Transaction deleted successfully"},
-        status=200
-    )
+    return Response(status=204)
 @api_view(["PUT"])
 def update_transaction(request, id):
 

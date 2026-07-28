@@ -4,11 +4,14 @@ from .views import (
     delete_transaction,
     update_transaction,
     register_user,
+  
 )
+from .ai_views import ai_helper
 
 urlpatterns = [
     path("transactions/", transaction_list),
-    path("transactions/<int:id>/delete/", delete_transaction),
+    path("transactions/<int:id>/", delete_transaction),
     path("transactions/<int:id>/update/", update_transaction),
     path("register/", register_user),
+       path("ai-helper/", ai_helper), 
 ]
