@@ -10,7 +10,12 @@ function Navbar() {
 
             <div className="flex gap-8 font-serif">
 
-                
+                <Link
+                    to="/dashboard"
+                    className="hover:text-black transition"
+                >
+                    Dashboard
+                </Link>
 
                 <Link
                     to="/add-expense"
