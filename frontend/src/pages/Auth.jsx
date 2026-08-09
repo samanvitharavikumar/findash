@@ -70,9 +70,9 @@ function Auth() {
 
     return (
 
-        <div className="font-serif min-h-screen w-screen bg-gradient-to-br from-slate-100 to-indigo-100 flex items-center justify-center">
+        <div className="min-h-screen w-full font-serif bg-gradient-to-br from-slate-100 to-indigo-100 flex items-center justify-center">
 
-            <div className="bg-slate-300 bg-indigo-900  p-10 w-700">
+            <div className="min-h-screen w-full bg-slate-300 bg-indigo-900  p-10 w-700">
 
                 <h1 className=" text-4xl font-bold text-center text-indigo-900">
                     FinDash

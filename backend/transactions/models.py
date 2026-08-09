@@ -12,6 +12,7 @@ class Transaction(models.Model):
         ("Income", "Income"),
         ("Expense", "Expense"),
     ],
+    
         default="Expense",
 
 )

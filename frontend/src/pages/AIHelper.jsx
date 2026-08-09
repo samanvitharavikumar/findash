@@ -43,11 +43,11 @@ function AIHelper() {
 
             <div className="min-h-screen bg-slate-100 p-8">
 
-                <h1 className="text-4xl font-bold text-center mb-10">
+                <h1 className="font-serif text-4xl font-bold text-center mb-10 text-indigo-900">
                      AI Financial Assistant
                 </h1>
 
-                <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-8">
+                <div className="font-serif max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-8">
 
                     <textarea
                         rows="5"
