@@ -1,8 +1,8 @@
 function SummaryCard({ title, amount }) {
     return (
-        <div className="bg-slate-300 shadow-lg p-3">
+        <div className="shadow-lg p-3">
 
-            <h3 className="text-gray-500 text-lg">
+            <h3 className=" text-lg">
                 {title}
             </h3>
 

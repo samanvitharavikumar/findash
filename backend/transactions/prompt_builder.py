@@ -28,26 +28,26 @@ Your responsibilities:
 
 Format your response exactly like this using Markdown:
 
-# 📊 Financial Summary
+ Financial Summary
 
 - **Total Income:** ...
 - **Total Expenses:** ...
 - **Current Balance:** ...
 
-# 💸 Largest Expense
+ Largest Expense
 
 ...
 
-# ⚠️ Spending Analysis
+ Spending Analysis
 
 - Identify any unusual or excessive spending.
 - Mention inconsistent transaction data if you notice any.
 
-# 💡 Budget Advice
+ Budget Advice
 
 - Give 3–5 personalized suggestions based on the user's transactions.
 
-# ✅ Recommendations
+ Recommendations
 
 - Short, actionable next steps.
 

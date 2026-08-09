@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import SummaryCard from "../components/SummaryCard";
 import axios from "axios";
+import { motion } from "framer-motion";
 
 function Dashboard() {
 
@@ -38,9 +39,7 @@ function Dashboard() {
     };
 
     useEffect(() => {
-
         fetchTransactions();
-
     }, []);
 
     const deleteTransaction = async (id) => {
@@ -81,9 +80,7 @@ function Dashboard() {
     };
 
     const cancelEditing = () => {
-
         setEditingId(null);
-
     };
 
     const saveEdit = async (id) => {
@@ -120,7 +117,8 @@ function Dashboard() {
     const income = transactions
         .filter((transaction) => Number(transaction.amount) > 0)
         .reduce(
-            (total, transaction) => total + Number(transaction.amount),
+            (total, transaction) =>
+                total + Number(transaction.amount),
             0
         );
 
@@ -128,151 +126,245 @@ function Dashboard() {
         transactions
             .filter((transaction) => Number(transaction.amount) < 0)
             .reduce(
-                (total, transaction) => total + Number(transaction.amount),
+                (total, transaction) =>
+                    total + Number(transaction.amount),
                 0
             )
     );
 
     const balance = income - expenses;
+
     return (
-    <>
-        <Navbar />
+        <div className="min-h-screen w-full">
 
-        <div className="min-h-screen bg-slate-300 p-8">
+            <Navbar />
 
-            <h1 className="text-5xl font-serif text-black mb-8">
-                Welcome to FinDash
-            </h1>
+            <main className="mx-auto max-w-7xl px-6 py-10">
 
-            <div className="bg-indigo-900 grid grid-cols-3 gap-5 font-serif mb-10">
-                <SummaryCard title="Balance" amount={`$${balance}`} color="bg-slate-900"/>
-                <SummaryCard title="Income" amount={`$${income}`} />
-                <SummaryCard title="Expenses" amount={`$${expenses}`} />
-            </div>
-
-            <div className="bg-indigo-900 rounded-xl font-serif text-white">
-
-                <div
-                    onClick={() => setShowTransactions(!showTransactions)}
-                    className="flex justify-between items-center p-5 cursor-pointer"
+                {/* Header */}
+                <motion.div
+                    initial={{ opacity: 0, y: -15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    className="mb-10"
                 >
-                    <h2 className="text-2xl ">
-                        Transactions
-                    </h2>
 
-                    <span className="text-2xl">
-                        {showTransactions ? "▲" : "▼"}
-                    </span>
+                    <p className="mb-2 text-sm uppercase tracking-[0.25em] text-white/40">
+                        Financial Overview
+                    </p>
+
+                    
+                        
+
+                    <p className="mt-3 text-white/50">
+                        Your financial activity, all in one place.
+                    </p>
+
+                </motion.div>
+
+                {/* Summary */}
+                <div className="mb-10 grid gap-5 md:grid-cols-3">
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                    >
+                        <SummaryCard
+                            title="Balance"
+                            amount={`$${balance.toFixed(2)}`}
+                            color="bg-white/10"
+                        />
+                    </motion.div>
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                    >
+                        <SummaryCard
+                            title="Income"
+                            amount={`$${income.toFixed(2)}`}
+                        />
+                    </motion.div>
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                    >
+                        <SummaryCard
+                            title="Expenses"
+                            amount={`$${expenses.toFixed(2)}`}
+                        />
+                    </motion.div>
+
                 </div>
 
-                {showTransactions && (
+                {/* Transactions */}
+                <motion.section
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="overflow-hidden border border-white/10 bg-white/[0.04] backdrop-blur-sm"
+                >
 
-                    <div className="p-2">
+                    {/* Header */}
+                    <button
+                        onClick={() =>
+                            setShowTransactions(!showTransactions)
+                        }
+                        className="flex w-full items-center justify-between px-6 py-5 text-left transition hover:bg-white/[0.04]"
+                    >
 
-                        {transactions.map((transaction) => (
+                        <div>
+                            <h2 className="text-xl font-medium text-white">
+                                Transactions
+                            </h2>
 
-                            <div
-                                key={transaction.id}
-                                className="border rounded-lg p-4 mb-4"
-                            >
+                            <p className="mt-1 text-sm text-white/40">
+                                {transactions.length} transaction
+                                {transactions.length !== 1 ? "s" : ""}
+                            </p>
+                        </div>
 
-                                {editingId === transaction.id ? (
+                        <span className="text-white/50">
+                            {showTransactions ? "▲" : "▼"}
+                        </span>
 
-                                    <>
-                                        <input
-                                            value={editTitle}
-                                            onChange={(e) =>
-                                                setEditTitle(e.target.value)
-                                            }
-                                            className="border p-2 rounded w-full mb-3"
-                                        />
+                    </button>
 
-                                        <input
-                                            value={editAmount}
-                                            onChange={(e) =>
-                                                setEditAmount(e.target.value)
-                                            }
-                                            className="border p-2 rounded w-full mb-4"
-                                        />
+                    {/* Transaction list */}
+                    {showTransactions && (
 
-                                        <div className="flex gap-3">
+                        <div className="border-t border-white/10 p-5">
 
-                                            <button
-                                                onClick={() =>
-                                                    saveEdit(transaction.id)
-                                                }
-                                                className=" text-white px-4 py-2 rounded"
-                                            >
-                                                Save
-                                            </button>
+                            {transactions.length === 0 ? (
 
-                                            <button
-                                                onClick={cancelEditing}
-                                                className="bg-slate-300 text-white px-4 py-2 rounded"
-                                            >
-                                                Cancel
-                                            </button>
+                                <p className="py-8 text-center text-white/40">
+                                    No transactions yet.
+                                </p>
 
-                                        </div>
+                            ) : (
 
-                                    </>
+                                transactions.map((transaction) => (
 
-                                ) : (
+                                    <motion.div
+                                        key={transaction.id}
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        className="mb-3 border border-white/10 bg-white/[0.03] p-4"
+                                    >
 
-                                    <div className="flex justify-between items-center">
+                                        {editingId === transaction.id ? (
 
-                                        <div>
+                                            <div>
 
-                                            <h3 className="text-xl font-normal">
-                                                {transaction.title}
-                                            </h3>
+                                                <input
+                                                    value={editTitle}
+                                                    onChange={(e) =>
+                                                        setEditTitle(e.target.value)
+                                                    }
+                                                    className="mb-3 w-full border-b border-white/20 bg-transparent p-2 text-white outline-none focus:border-white"
+                                                />
 
-                                            <p className="text-lg">
-                                                ${transaction.amount}
-                                            </p>
+                                                <input
+                                                    value={editAmount}
+                                                    onChange={(e) =>
+                                                        setEditAmount(e.target.value)
+                                                    }
+                                                    className="mb-4 w-full border-b border-white/20 bg-transparent p-2 text-white outline-none focus:border-white"
+                                                />
 
-                                        </div>
+                                                <div className="flex gap-3">
 
-                                        <div className="flex gap-3">
+                                                    <button
+                                                        onClick={() =>
+                                                            saveEdit(transaction.id)
+                                                        }
+                                                        className="bg-white px-4 py-2 text-sm font-medium text-black transition hover:bg-white/80"
+                                                    >
+                                                        Save
+                                                    </button>
 
-                                            <button
-                                                onClick={() =>
-                                                    startEditing(transaction)
-                                                }
-                                                className="bg-indigo-900 text-white px-4 py-2 rounded hover:bg-slate-600"
-                                            >
-                                                Edit
-                                            </button>
+                                                    <button
+                                                        onClick={cancelEditing}
+                                                        className="border border-white/10 px-4 py-2 text-sm text-white/60 transition hover:bg-white/10"
+                                                    >
+                                                        Cancel
+                                                    </button>
 
-                                            <button
-                                                onClick={() =>
-                                                    deleteTransaction(transaction.id)
-                                                }
-                                                className="bg-indigo-900 text-white px-4 py-2 rounded hover:bg-slate-600"
-                                            >
-                                                Delete
-                                            </button>
+                                                </div>
 
-                                        </div>
+                                            </div>
 
-                                    </div>
+                                        ) : (
 
-                                )}
+                                            <div className="flex items-center justify-between gap-5">
 
-                            </div>
+                                                <div>
 
-                        ))}
+                                                    <h3 className="text-lg text-white">
+                                                        {transaction.title}
+                                                    </h3>
 
-                    </div>
+                                                    <p
+                                                        className={`mt-1 ${
+                                                            Number(transaction.amount) >= 0
+                                                                ? "text-emerald-400"
+                                                                : "text-pink-400"
+                                                        }`}
+                                                    >
+                                                        {Number(transaction.amount) >= 0
+                                                            ? "+"
+                                                            : ""}
+                                                        ${transaction.amount}
+                                                    </p>
 
-                )}
+                                                </div>
 
-            </div>
+                                                <div className="flex gap-2">
+
+                                                    <button
+                                                        onClick={() =>
+                                                            startEditing(transaction)
+                                                        }
+                                                        className="border border-white/10 px-4 py-2 text-sm text-white/60 transition hover:bg-white/10 hover:text-white"
+                                                    >
+                                                        Edit
+                                                    </button>
+
+                                                    <button
+                                                        onClick={() =>
+                                                            deleteTransaction(transaction.id)
+                                                        }
+                                                        className="border border-white/10 px-4 py-2 text-sm text-white/60 transition hover:bg-white/10 hover:text-white"
+                                                    >
+                                                        Delete
+                                                    </button>
+
+                                                </div>
+
+                                            </div>
+
+                                        )}
+
+                                    </motion.div>
+
+                                ))
+
+                            )}
+
+                        </div>
+
+                    )}
+
+                </motion.section>
+
+            </main>
 
         </div>
-    </>
-);
-
-
+    );
 }
-export default Dashboard
+
+export default Dashboard;

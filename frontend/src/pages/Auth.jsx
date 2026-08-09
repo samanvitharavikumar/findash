@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { motion, AnimatePresence } from "framer-motion";
 
 function Auth() {
-
     const [isLogin, setIsLogin] = useState(true);
 
     const [username, setUsername] = useState("");
@@ -14,9 +14,7 @@ function Auth() {
     const navigate = useNavigate();
 
     async function login() {
-
         try {
-
             const response = await axios.post(
                 "http://127.0.0.1:8000/api/token/",
                 {
@@ -31,22 +29,17 @@ function Auth() {
             navigate("/dashboard");
 
         } catch (error) {
-
             alert("Invalid username or password.");
-
         }
-
     }
 
     async function register() {
-
         if (password !== confirmPassword) {
             alert("Passwords do not match.");
             return;
         }
 
         try {
-
             await axios.post(
                 "http://127.0.0.1:8000/api/register/",
                 {
@@ -61,106 +54,136 @@ function Auth() {
             setIsLogin(true);
 
         } catch (error) {
-
             alert("Registration Failed.");
-
         }
-
     }
 
     return (
+        <div className="min-h-screen w-full flex items-center justify-center px-6">
 
-        <div className="min-h-screen w-full font-serif bg-gradient-to-br from-slate-100 to-indigo-100 flex items-center justify-center">
+            <div className="w-full max-w-sm">
 
-            <div className="min-h-screen w-full bg-slate-300 bg-indigo-900  p-10 w-700">
+                {/* Branding */}
+                <motion.div
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    className="mb-10 text-center"
+                >
+                    <h1 className="text-5xl font-semibold tracking-tight text-white">
+                        FinDash
+                    </h1>
 
-                <h1 className=" text-4xl font-bold text-center text-indigo-900">
-                    FinDash
-                </h1>
+                    <p className="mt-3 text-sm uppercase tracking-[0.2em] text-white/40">
+                        Personal Finance Management
+                    </p>
+                </motion.div>
 
-                <p className="text-center text-gray-500 mt-2 mb-8">
-                    Personal Finance Tracker
-                </p>
-
-                <div className="flex mb-8">
+                {/* Login / Register */}
+                <div className="mb-8 flex justify-center gap-8">
 
                     <button
-                        className={`w-1/2 py-2 rounded-l-xl ${
-                            isLogin
-                                ? "bg-indigo-900 text-white"
-                                : "bg-slate-300"
-                        }`}
                         onClick={() => setIsLogin(true)}
+                        className={`pb-2 text-sm transition ${
+                            isLogin
+                                ? "border-b border-white text-white"
+                                : "text-white/40 hover:text-white/70"
+                        }`}
                     >
                         Login
                     </button>
 
                     <button
-                        className={`w-1/2 py-2 rounded-r-xl ${
-                            !isLogin
-                                ? "bg-indigo-900 text-white"
-                                : "bg-slate-300"
-                        }`}
                         onClick={() => setIsLogin(false)}
+                        className={`pb-2 text-sm transition ${
+                            !isLogin
+                                ? "border-b border-white text-white"
+                                : "text-white/40 hover:text-white/70"
+                        }`}
                     >
                         Register
                     </button>
 
                 </div>
 
-                <input
-                    type="text"
-                    placeholder="Username"
-                    className="w-full border rounded-xl p-3 mb-4"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                />
+                {/* Animated Form */}
+                <AnimatePresence mode="wait">
 
-                {!isLogin && (
+                    <motion.div
+                        key={isLogin ? "login" : "register"}
+                        initial={{
+                            opacity: 0,
+                            x: isLogin ? -15 : 15,
+                        }}
+                        animate={{
+                            opacity: 1,
+                            x: 0,
+                        }}
+                        exit={{
+                            opacity: 0,
+                            x: isLogin ? 15 : -15,
+                        }}
+                        transition={{ duration: 0.25 }}
+                    >
 
-                    <input
-                        type="email"
-                        placeholder="Email"
-                        className="w-full border rounded-xl p-3 mb-4"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
+                        {/* Username */}
+                        <input
+                            type="text"
+                            placeholder="Username"
+                            className="mb-5 w-full border-b border-white/20 bg-transparent px-1 py-3 text-white placeholder-white/30 outline-none transition focus:border-white"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                        />
 
-                )}
+                        {/* Email */}
+                        {!isLogin && (
+                            <input
+                                type="email"
+                                placeholder="Email"
+                                className="mb-5 w-full border-b border-white/20 bg-transparent px-1 py-3 text-white placeholder-white/30 outline-none transition focus:border-white"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                        )}
 
-                <input
-                    type="password"
-                    placeholder="Password"
-                    className="w-full border rounded-xl p-3 mb-4"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
+                        {/* Password */}
+                        <input
+                            type="password"
+                            placeholder="Password"
+                            className="mb-5 w-full border-b border-white/20 bg-transparent px-1 py-3 text-white placeholder-white/30 outline-none transition focus:border-white"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
 
-                {!isLogin && (
+                        {/* Confirm Password */}
+                        {!isLogin && (
+                            <input
+                                type="password"
+                                placeholder="Confirm Password"
+                                className="mb-8 w-full border-b border-white/20 bg-transparent px-1 py-3 text-white placeholder-white/30 outline-none transition focus:border-white"
+                                value={confirmPassword}
+                                onChange={(e) =>
+                                    setConfirmPassword(e.target.value)
+                                }
+                            />
+                        )}
 
-                    <input
-                        type="password"
-                        placeholder="Confirm Password"
-                        className="w-full border rounded-xl p-3 mb-6"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                    />
+                        {/* Submit */}
+                        <button
+                            onClick={isLogin ? login : register}
+                            className="w-full bg-white py-3 font-medium text-black transition hover:bg-white/90"
+                        >
+                            {isLogin ? "Login" : "Create Account"}
+                        </button>
 
-                )}
+                    </motion.div>
 
-                <button
-                    onClick={isLogin ? login : register}
-                    className="w-full bg-indigo-900 text-white rounded-xl py-3 hover:bg-indigo-900 transition"
-                >
-                    {isLogin ? "Login" : "Create Account"}
-                </button>
+                </AnimatePresence>
 
             </div>
 
         </div>
-
     );
-
 }
 
 export default Auth;

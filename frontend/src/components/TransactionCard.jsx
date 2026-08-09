@@ -4,7 +4,7 @@ function TransactionCard({
   editTransaction,
 }) {
   return (
-    <div className="bg-indigo-900 text-white rounded-xl p-6 border border-white/20 flex justify-between items-center">
+    <div className="bg-indigo-900 text-white rounded-xl p-4 border border-white/20 flex justify-between items-center">
 
       <div>
         <h3 className="text-xl font-normal">

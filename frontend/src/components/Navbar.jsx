@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 function Navbar() {
     return (
-        <nav className="flex justify-between items-center bg-indigo-900 text-white px-8 py-4 shadow-lg">
+        <nav className="flex justify-between items-center text-white px-8 py-4 shadow-lg">
 
             <h2 className="text-2xl font-serif">
                  FinDash
@@ -12,30 +12,33 @@ function Navbar() {
 
                 <Link
                     to="/dashboard"
-                    className="hover:text-black transition"
+                    className="hover:text-pink-300 transition"
                 >
                     Dashboard
                 </Link>
 
                 <Link
                     to="/add-expense"
-                    className="hover:text-black transition"
+                    className="hover:text-pink-300 transition"
                 >
                     Add Expense
                 </Link>
 
                 <Link
                     to="/charts"
-                    className="hover:text-black transition"
+                    className="hover:text-pink-300 transition"
                 >
                     Charts
                 </Link>
 
                 <Link
                     to="/ai-helper"
-                    className="hover:text-black transition"
+                    className="hover:text-pink-300 transition"
                 >
                     AI Helper
+                </Link>
+                <Link to="/credit-score">
+                     Credit Score
                 </Link>
 
             </div>

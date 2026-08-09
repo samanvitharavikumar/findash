@@ -2,9 +2,9 @@ import { useState } from "react";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 function AddExpense() {
-
     const [title, setTitle] = useState("");
     const [amount, setAmount] = useState("");
     const [type, setType] = useState("Expense");
@@ -12,9 +12,7 @@ function AddExpense() {
     const navigate = useNavigate();
 
     async function addTransaction() {
-
         try {
-
             const token = localStorage.getItem("access");
 
             await axios.post(
@@ -36,84 +34,127 @@ function AddExpense() {
             navigate("/dashboard");
 
         } catch (error) {
-
             console.log(error.response?.data);
-
         }
-
     }
 
     return (
-        <>
+        <div className="min-h-screen w-full">
+
             <Navbar />
 
-            <div className="min-h-screen bg-slate-300  flex justify-center items-center font-serif">
+            <div className="flex min-h-[calc(100vh-70px)] items-center justify-center px-6">
 
-                <div className="bg-slate-300 p-10  shadow-2xl">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    className="w-full max-w-md"
+                >
 
-                    <h1 className="text-3xl font-bold text-center text-indigo-900">
-                        Add Transaction
-                    </h1>
+                    {/* Heading */}
+                    <div className="mb-10">
 
-                    <p className="text-center text-gray-500 mb-8">
-                        Record a new income or expense.
-                    </p>
+                        <p className="mb-2 text-sm uppercase tracking-[0.25em] text-white/40">
+                            Financial Activity
+                        </p>
 
-                    <label className="block mb-2 font-medium text-indigo-900">
-                        Title
-                    </label>
+                        <h1 className="text-4xl font-semibold tracking-tight text-white">
+                            Add Transaction
+                        </h1>
 
-                    <input
-                        type="text"
-                        className="w-full border border-slate-600 rounded-xl p-3 mb-5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        placeholder="Enter title"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                    />
+                        <p className="mt-3 text-white/50">
+                            Record a new income or expense.
+                        </p>
 
-                    <label className="block mb-2 font-medium text-indigo-900">
-                        Amount
-                    </label>
+                    </div>
 
-                    <input
-                        type="number"
-                        className="w-full border border-slate-300 rounded-xl p-3 mb-5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        placeholder="Enter amount"
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
-                    />
+                    {/* Title */}
+                    <div className="mb-6">
 
-                    <label className="block mb-2 font-medium text-indigo-900">
-                        Type
-                    </label>
+                        <label className="mb-2 block text-sm text-white/60">
+                            Title
+                        </label>
 
-                    <select
-                        value={type}
-                        onChange={(e) => setType(e.target.value)}
-                        className="w-full border border-slate-300 rounded-xl p-3 mb-6 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    >
-                        <option value="Expense">Expense</option>
-                        <option value="Income"> Income</option>
-                    </select>
+                        <input
+                            type="text"
+                            placeholder="Enter title"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            className="w-full border-b border-white/20 bg-transparent px-1 py-3 text-white placeholder-white/30 outline-none transition focus:border-white"
+                        />
 
-                    <button
+                    </div>
+
+                    {/* Amount */}
+                    <div className="mb-6">
+
+                        <label className="mb-2 block text-sm text-white/60">
+                            Amount
+                        </label>
+
+                        <input
+                            type="number"
+                            placeholder="Enter amount"
+                            value={amount}
+                            onChange={(e) => setAmount(e.target.value)}
+                            className="w-full border-b border-white/20 bg-transparent px-1 py-3 text-white placeholder-white/30 outline-none transition focus:border-white"
+                        />
+
+                    </div>
+
+                    {/* Type */}
+                    <div className="mb-8">
+
+                        <label className="mb-2 block text-sm text-white/60">
+                            Type
+                        </label>
+
+                        <select
+                            value={type}
+                            onChange={(e) => setType(e.target.value)}
+                            className="w-full border-b border-white/20 bg-transparent px-1 py-3 text-white outline-none transition focus:border-white"
+                        >
+                            <option
+                                value="Expense"
+                                className="bg-black"
+                            >
+                                Expense
+                            </option>
+
+                            <option
+                                value="Income"
+                                className="bg-black"
+                            >
+                                Income
+                            </option>
+                        </select>
+
+                    </div>
+
+                    {/* Add */}
+                    <motion.button
+                        whileTap={{ scale: 0.97 }}
+                        whileHover={{ y: -2 }}
                         onClick={addTransaction}
-                        className="w-full bg-indigo-900 text-white py-3 rounded-xl font-semibold hover:bg-slate-300 transition duration-300 active:scale-95"
+                        className="w-full bg-white py-3 font-medium text-black transition hover:bg-white/90"
                     >
                         Add Transaction
-                    </button>
+                    </motion.button>
 
+                    {/* Back */}
                     <button
                         onClick={() => navigate("/dashboard")}
-                        className="bg-slate-300 w-full mt-4 border border-indigo-900 text-indigo-900 py-3 rounded-xl hover:bg-indigo-90 transition"
+                        className="mt-4 w-full border border-white/10 py-3 text-white/60 transition hover:bg-white/5 hover:text-white"
                     >
                         Back to Dashboard
                     </button>
 
-                </div>
+                </motion.div>
 
             </div>
-        </>
+
+        </div>
     );
 }
 

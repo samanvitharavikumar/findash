@@ -117,4 +117,3 @@ def predict_credit_score(request):
             status=400
         )
 
-    return Response(serializer.errors, status=400)
