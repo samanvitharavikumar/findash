@@ -1,0 +1,44 @@
+services:
+
+  postgres:
+    image: postgres:17
+    container_name: findash-postgres
+    environment:
+      POSTGRES_DB: findash
+      POSTGRES_USER: findash_user
+      POSTGRES_PASSWORD: findash_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    container_name: findash-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    environment:
+      DB_NAME: findash
+      DB_USER: findash_user
+      DB_PASSWORD: findash_password
+      DB_HOST: postgres
+      DB_PORT: 5432
+    command: python manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - postgres
+
+  frontend:
+    build: ./frontend
+    container_name: findash-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

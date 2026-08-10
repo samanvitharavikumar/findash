@@ -37,7 +37,8 @@ function Navbar() {
                 >
                     AI Helper
                 </Link>
-                <Link to="/credit-score">
+                <Link to="/credit-score"
+                className="hover:text-pink-300 transition">
                      Credit Score
                 </Link>
 

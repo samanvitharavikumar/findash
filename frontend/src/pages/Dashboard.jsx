@@ -5,18 +5,20 @@ import axios from "axios";
 import { motion } from "framer-motion";
 
 function Dashboard() {
-
     const [transactions, setTransactions] = useState([]);
     const [showTransactions, setShowTransactions] = useState(false);
 
     const [editingId, setEditingId] = useState(null);
     const [editTitle, setEditTitle] = useState("");
     const [editAmount, setEditAmount] = useState("");
+    const [editType, setEditType] = useState("Expense");
+
+    // =========================
+    // FETCH TRANSACTIONS
+    // =========================
 
     const fetchTransactions = async () => {
-
         try {
-
             const token = localStorage.getItem("access");
 
             const response = await axios.get(
@@ -28,24 +30,27 @@ function Dashboard() {
                 }
             );
 
+            console.log("TRANSACTIONS FROM BACKEND:", response.data);
+
             setTransactions(response.data);
-
         } catch (error) {
-
-            console.log(error);
-
+            console.log(
+                "FETCH ERROR:",
+                error.response?.data || error
+            );
         }
-
     };
 
     useEffect(() => {
         fetchTransactions();
     }, []);
 
+    // =========================
+    // DELETE TRANSACTION
+    // =========================
+
     const deleteTransaction = async (id) => {
-
         try {
-
             const token = localStorage.getItem("access");
 
             await axios.delete(
@@ -57,43 +62,60 @@ function Dashboard() {
                 }
             );
 
-            setTransactions(
-                transactions.filter(
+            setTransactions((previousTransactions) =>
+                previousTransactions.filter(
                     (transaction) => transaction.id !== id
                 )
             );
-
         } catch (error) {
-
-            console.log(error.response?.data);
-
+            console.log(
+                "DELETE ERROR:",
+                error.response?.data || error
+            );
         }
-
     };
+
+    // =========================
+    // START EDITING
+    // =========================
 
     const startEditing = (transaction) => {
-
         setEditingId(transaction.id);
         setEditTitle(transaction.title);
-        setEditAmount(transaction.amount);
+        setEditAmount(Math.abs(Number(transaction.amount)));
 
+        setEditType(
+            transaction.type?.toLowerCase() === "income"
+                ? "Income"
+                : "Expense"
+        );
     };
+
+    // =========================
+    // CANCEL EDIT
+    // =========================
 
     const cancelEditing = () => {
         setEditingId(null);
+        setEditTitle("");
+        setEditAmount("");
+        setEditType("Expense");
     };
 
+    // =========================
+    // SAVE EDIT
+    // =========================
+
     const saveEdit = async (id) => {
-
         try {
-
             const token = localStorage.getItem("access");
 
             await axios.put(
                 `http://127.0.0.1:8000/api/transactions/${id}/update/`,
                 {
                     title: editTitle,
-                    amount: editAmount,
+                    amount: Math.abs(Number(editAmount)),
+                    type: editType,
                 },
                 {
                     headers: {
@@ -102,37 +124,48 @@ function Dashboard() {
                 }
             );
 
-            setEditingId(null);
-
-            fetchTransactions();
+            cancelEditing();
+            await fetchTransactions();
 
         } catch (error) {
-
-            console.log(error.response?.data);
-
+            console.log(
+                "EDIT ERROR:",
+                error.response?.data || error
+            );
         }
-
     };
 
-    const income = transactions
-        .filter((transaction) => Number(transaction.amount) > 0)
-        .reduce(
-            (total, transaction) =>
-                total + Number(transaction.amount),
-            0
-        );
+    // =========================
+    // CALCULATE TOTALS
+    // =========================
 
-    const expenses = Math.abs(
-        transactions
-            .filter((transaction) => Number(transaction.amount) < 0)
-            .reduce(
-                (total, transaction) =>
-                    total + Number(transaction.amount),
-                0
-            )
-    );
+    const income = transactions.reduce((total, transaction) => {
+        const type = String(transaction.type || "").trim().toLowerCase();
+        const amount = Math.abs(Number(transaction.amount) || 0);
+
+        if (type === "income") {
+            return total + amount;
+        }
+
+        return total;
+    }, 0);
+
+    const expenses = transactions.reduce((total, transaction) => {
+        const type = String(transaction.type || "").trim().toLowerCase();
+        const amount = Math.abs(Number(transaction.amount) || 0);
+
+        if (type === "expense") {
+            return total + amount;
+        }
+
+        return total;
+    }, 0);
 
     const balance = income - expenses;
+
+    // =========================
+    // UI
+    // =========================
 
     return (
         <div className="min-h-screen w-full">
@@ -141,28 +174,30 @@ function Dashboard() {
 
             <main className="mx-auto max-w-7xl px-6 py-10">
 
-                {/* Header */}
+                {/* HEADER */}
+
                 <motion.div
                     initial={{ opacity: 0, y: -15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
                     className="mb-10"
                 >
-
                     <p className="mb-2 text-sm uppercase tracking-[0.25em] text-white/40">
                         Financial Overview
                     </p>
 
-                    
-                        
+                    <h1 className="text-4xl font-semibold tracking-tight text-white">
+                        Dashboard
+                    </h1>
 
                     <p className="mt-3 text-white/50">
                         Your financial activity, all in one place.
                     </p>
-
                 </motion.div>
 
-                {/* Summary */}
+
+                {/* SUMMARY */}
+
                 <div className="mb-10 grid gap-5 md:grid-cols-3">
 
                     <motion.div
@@ -172,10 +207,11 @@ function Dashboard() {
                     >
                         <SummaryCard
                             title="Balance"
-                            amount={`$${balance.toFixed(2)}`}
+                            amount={`₹${balance.toFixed(2)}`}
                             color="bg-white/10"
                         />
                     </motion.div>
+
 
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -184,9 +220,10 @@ function Dashboard() {
                     >
                         <SummaryCard
                             title="Income"
-                            amount={`$${income.toFixed(2)}`}
+                            amount={`₹${income.toFixed(2)}`}
                         />
                     </motion.div>
+
 
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -195,13 +232,15 @@ function Dashboard() {
                     >
                         <SummaryCard
                             title="Expenses"
-                            amount={`$${expenses.toFixed(2)}`}
+                            amount={`₹${expenses.toFixed(2)}`}
                         />
                     </motion.div>
 
                 </div>
 
-                {/* Transactions */}
+
+                {/* TRANSACTIONS */}
+
                 <motion.section
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -209,15 +248,14 @@ function Dashboard() {
                     className="overflow-hidden border border-white/10 bg-white/[0.04] backdrop-blur-sm"
                 >
 
-                    {/* Header */}
                     <button
                         onClick={() =>
                             setShowTransactions(!showTransactions)
                         }
                         className="flex w-full items-center justify-between px-6 py-5 text-left transition hover:bg-white/[0.04]"
                     >
-
                         <div>
+
                             <h2 className="text-xl font-medium text-white">
                                 Transactions
                             </h2>
@@ -226,6 +264,7 @@ function Dashboard() {
                                 {transactions.length} transaction
                                 {transactions.length !== 1 ? "s" : ""}
                             </p>
+
                         </div>
 
                         <span className="text-white/50">
@@ -234,7 +273,7 @@ function Dashboard() {
 
                     </button>
 
-                    {/* Transaction list */}
+
                     {showTransactions && (
 
                         <div className="border-t border-white/10 p-5">
@@ -247,111 +286,182 @@ function Dashboard() {
 
                             ) : (
 
-                                transactions.map((transaction) => (
+                                transactions.map((transaction) => {
 
-                                    <motion.div
-                                        key={transaction.id}
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        className="mb-3 border border-white/10 bg-white/[0.03] p-4"
-                                    >
+                                    const transactionType =
+                                        String(
+                                            transaction.type || ""
+                                        )
+                                            .trim()
+                                            .toLowerCase();
 
-                                        {editingId === transaction.id ? (
+                                    const isIncome =
+                                        transactionType === "income";
 
-                                            <div>
+                                    const amount =
+                                        Math.abs(
+                                            Number(transaction.amount) || 0
+                                        );
 
-                                                <input
-                                                    value={editTitle}
-                                                    onChange={(e) =>
-                                                        setEditTitle(e.target.value)
-                                                    }
-                                                    className="mb-3 w-full border-b border-white/20 bg-transparent p-2 text-white outline-none focus:border-white"
-                                                />
+                                    return (
 
-                                                <input
-                                                    value={editAmount}
-                                                    onChange={(e) =>
-                                                        setEditAmount(e.target.value)
-                                                    }
-                                                    className="mb-4 w-full border-b border-white/20 bg-transparent p-2 text-white outline-none focus:border-white"
-                                                />
+                                        <motion.div
+                                            key={transaction.id}
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            className="mb-3 border border-white/10 bg-white/[0.03] p-4"
+                                        >
 
-                                                <div className="flex gap-3">
-
-                                                    <button
-                                                        onClick={() =>
-                                                            saveEdit(transaction.id)
-                                                        }
-                                                        className="bg-white px-4 py-2 text-sm font-medium text-black transition hover:bg-white/80"
-                                                    >
-                                                        Save
-                                                    </button>
-
-                                                    <button
-                                                        onClick={cancelEditing}
-                                                        className="border border-white/10 px-4 py-2 text-sm text-white/60 transition hover:bg-white/10"
-                                                    >
-                                                        Cancel
-                                                    </button>
-
-                                                </div>
-
-                                            </div>
-
-                                        ) : (
-
-                                            <div className="flex items-center justify-between gap-5">
+                                            {editingId === transaction.id ? (
 
                                                 <div>
 
-                                                    <h3 className="text-lg text-white">
-                                                        {transaction.title}
-                                                    </h3>
+                                                    <input
+                                                        value={editTitle}
+                                                        onChange={(e) =>
+                                                            setEditTitle(
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        className="mb-3 w-full border-b border-white/20 bg-transparent p-2 text-white outline-none focus:border-white"
+                                                        placeholder="Title"
+                                                    />
 
-                                                    <p
-                                                        className={`mt-1 ${
-                                                            Number(transaction.amount) >= 0
-                                                                ? "text-emerald-400"
-                                                                : "text-pink-400"
-                                                        }`}
+
+                                                    <input
+                                                        type="number"
+                                                        value={editAmount}
+                                                        onChange={(e) =>
+                                                            setEditAmount(
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        className="mb-3 w-full border-b border-white/20 bg-transparent p-2 text-white outline-none focus:border-white"
+                                                        placeholder="Amount"
+                                                    />
+
+
+                                                    <select
+                                                        value={editType}
+                                                        onChange={(e) =>
+                                                            setEditType(
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        className="mb-4 w-full border-b border-white/20 bg-transparent p-2 text-white outline-none focus:border-white"
                                                     >
-                                                        {Number(transaction.amount) >= 0
-                                                            ? "+"
-                                                            : ""}
-                                                        ${transaction.amount}
-                                                    </p>
+
+                                                        <option
+                                                            value="Expense"
+                                                            className="bg-black"
+                                                        >
+                                                            Expense
+                                                        </option>
+
+                                                        <option
+                                                            value="Income"
+                                                            className="bg-black"
+                                                        >
+                                                            Income
+                                                        </option>
+
+                                                    </select>
+
+
+                                                    <div className="flex gap-3">
+
+                                                        <button
+                                                            onClick={() =>
+                                                                saveEdit(
+                                                                    transaction.id
+                                                                )
+                                                            }
+                                                            className="border border-white/10 px-4 py-2 text-sm text-white/60 transition hover:bg-white/10 hover:text-white"
+                                                        >
+                                                            Save
+                                                        </button>
+
+                                                        <button
+                                                            onClick={
+                                                                cancelEditing
+                                                            }
+                                                            className="border border-white/10 px-4 py-2 text-sm text-white/60 transition hover:bg-white/10 hover:text-white"
+                                                        >
+                                                            Cancel
+                                                        </button>
+
+                                                    </div>
 
                                                 </div>
 
-                                                <div className="flex gap-2">
+                                            ) : (
 
-                                                    <button
-                                                        onClick={() =>
-                                                            startEditing(transaction)
-                                                        }
-                                                        className="border border-white/10 px-4 py-2 text-sm text-white/60 transition hover:bg-white/10 hover:text-white"
-                                                    >
-                                                        Edit
-                                                    </button>
+                                                <div className="flex items-center justify-between gap-5">
 
-                                                    <button
-                                                        onClick={() =>
-                                                            deleteTransaction(transaction.id)
-                                                        }
-                                                        className="border border-white/10 px-4 py-2 text-sm text-white/60 transition hover:bg-white/10 hover:text-white"
-                                                    >
-                                                        Delete
-                                                    </button>
+                                                    <div>
+
+                                                        <h3 className="text-lg font-normal text-white">
+                                                            {transaction.title}
+                                                        </h3>
+
+                                                        <p className="mt-1 text-xs uppercase tracking-wider text-white/40">
+                                                            {isIncome
+                                                                ? "Income"
+                                                                : "Expense"}
+                                                        </p>
+
+                                                        <p
+                                                            className={`mt-1 ${
+                                                                isIncome
+                                                                    ? "text-emerald-400"
+                                                                    : "text-pink-400"
+                                                            }`}
+                                                        >
+                                                            {isIncome
+                                                                ? "+"
+                                                                : "-"}
+                                                            ₹
+                                                            {amount.toFixed(2)}
+                                                        </p>
+
+                                                    </div>
+
+
+                                                    <div className="flex gap-2">
+
+                                                        <button
+                                                            onClick={() =>
+                                                                startEditing(
+                                                                    transaction
+                                                                )
+                                                            }
+                                                            className="border border-white/10 px-4 py-2 text-sm text-white/60 transition hover:bg-white/10 hover:text-white"
+                                                        >
+                                                            Edit
+                                                        </button>
+
+
+                                                        <button
+                                                            onClick={() =>
+                                                                deleteTransaction(
+                                                                    transaction.id
+                                                                )
+                                                            }
+                                                            className="border border-white/10 px-4 py-2 text-sm text-white/60 transition hover:bg-white/10 hover:text-white"
+                                                        >
+                                                            Delete
+                                                        </button>
+
+                                                    </div>
 
                                                 </div>
 
-                                            </div>
+                                            )}
 
-                                        )}
+                                        </motion.div>
 
-                                    </motion.div>
-
-                                ))
+                                    );
+                                })
 
                             )}
 
