@@ -301,29 +301,26 @@ function ChartsPage() {
                                         tick={{ fill: "rgba(255,255,255,0.5)" }}
                                     />
 
-                                    <Tooltip
-                                        contentStyle={{
-                                            backgroundColor:
-                                                "#080b14",
-                                            border:
-                                                "1px solid rgba(255,255,255,0.1)",
-                                            borderRadius:
-                                                "8px",
-                                            color: "white",
-                                        }}
-                                        formatter={(value) => [
-                                            `$${Number(value).toFixed(2)}`,
-                                            "Balance",
-                                        ]}
-                                        labelFormatter={(label) => {
-                                            const item =
-                                                lineData[label - 1];
+                                   <Tooltip
+    contentStyle={{
+        backgroundColor: "#080b14",
+        border: "1px solid rgba(255,255,255,0.1)",
+        borderRadius: "8px",
+        color: "white",
+    }}
+    formatter={(value) => [
+        `₹${Number(value).toFixed(2)}`,
+        "Balance",
+    ]}
+    labelFormatter={(label) => {
+        const item = lineData[label - 1];
 
-                                            return item
-                                                ? item.name
-                                                : `Transaction ${label}`;
-                                        }}
-                                    />
+        return item
+            ? item.name
+            : `Transaction ${label}`;
+    }}
+/>
+                                           
 
                                     <Line
                                         type="monotone"

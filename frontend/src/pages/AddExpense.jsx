@@ -76,13 +76,14 @@ function AddExpense() {
                             Title
                         </label>
 
-                        <input
-                            type="text"
-                            placeholder="Enter title"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            className="w-full border-b border-white/20 bg-transparent px-1 py-3 text-white placeholder-white/30 outline-none transition focus:border-white"
-                        />
+                     <input
+    type="text"
+    inputMode="decimal"
+    placeholder="Enter the type of expense/income"
+    value={amount}
+    onChange={(e) => setAmount(e.target.value)}
+    className="w-full border-b border-white/20 bg-transparent px-1 py-3 text-white placeholder-white/30 outline-none transition focus:border-white"
+/>
 
                     </div>
 
@@ -94,13 +95,13 @@ function AddExpense() {
                         </label>
 
                         <input
-                            type="number"
-                            placeholder="Enter amount"
-                            value={amount}
-                            onChange={(e) => setAmount(e.target.value)}
-                            className="w-full border-b border-white/20 bg-transparent px-1 py-3 text-white placeholder-white/30 outline-none transition focus:border-white"
-                        />
-
+    type="text"
+    inputMode="decimal"
+    placeholder="Enter amount"
+    value={amount}
+    onChange={(e) => setAmount(e.target.value)}
+    className="w-full border-b border-white/20 bg-transparent px-1 py-3 text-white placeholder-white/30 outline-none transition focus:border-white"
+/>
                     </div>
 
                     {/* Type */}

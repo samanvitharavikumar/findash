@@ -6,7 +6,7 @@ def build_prompt(summary, transactions, question):
         transaction_text += (
             f"""
 Title: {t.title}
-Amount: ${t.amount}
+Amount: ₹{t.amount}
 Type: {t.type}
 
 """
@@ -30,9 +30,9 @@ Format your response exactly like this using Markdown:
 
  Financial Summary
 
-- **Total Income:** ...
-- **Total Expenses:** ...
-- **Current Balance:** ...
+- Total Income: ...
+- Total Expenses: ...
+- Current Balance: ...
 
  Largest Expense
 
@@ -57,11 +57,11 @@ Keep your response under 300 words.
 FINANCIAL SUMMARY
 ==============================
 
-Total Income: ${summary["income"]}
+Total Income: ₹{summary["income"]}
 
-Total Expense: ${summary["expense"]}
+Total Expense: ₹{summary["expense"]}
 
-Current Balance: ${summary["balance"]}
+Current Balance: ₹{summary["balance"]}
 
 Largest Expense:
 {summary["largest_expense"]}
